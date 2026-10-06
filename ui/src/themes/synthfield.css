@@ -1,0 +1,338 @@
+/* ── Synthfield theme ──────────────────────────────────────────────────────────────────────────────────────────
+   Synthwave's neon night, drawn with Starfield's "NASA-punk" hand: hard-edged instrument panels, hairline rules,
+   corner ticks, condensed uppercase labels, mono data readouts, and the four-colour Constellation stripe —
+   recoloured as a synthwave sunset (magenta → orange → amber, with a cobalt band). Space instead of a grid floor:
+   a star field and a banded planet limb rising off the horizon.
+   Hooks: .sf-sidebar .sf-brand .sf-label .sf-topbar .sf-hero .sf-card .sf-tagline .sf-composer (plain class names
+   added in the TSX; harmless in other skins). */
+
+@font-face { font-family: 'Barlow'; font-weight: 400; font-display: swap; src: url('/fonts/barlow-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Barlow'; font-weight: 500; font-display: swap; src: url('/fonts/barlow-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Barlow'; font-weight: 600; font-display: swap; src: url('/fonts/barlow-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 500; font-display: swap; src: url('/fonts/barlow-condensed-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap; src: url('/fonts/barlow-condensed-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 700; font-display: swap; src: url('/fonts/barlow-condensed-latin-700-normal.woff2') format('woff2'); }
+
+/* ── tokens ──────────────────────────────────────────────────────────────── */
+html[data-skin='synthfield'] {
+  --sf-cobalt: #3d7bff;
+  --sf-magenta: #ff3d7f;
+  --sf-orange: #ff7a2f;
+  --sf-amber: #ffc23d;
+  --sf-bone: #ece6d6;
+  --sf-stripe: linear-gradient(90deg,
+    var(--sf-cobalt) 0 25%, var(--sf-magenta) 25% 50%, var(--sf-orange) 50% 75%, var(--sf-amber) 75% 100%);
+  --sf-stripe-v: linear-gradient(180deg,
+    var(--sf-cobalt) 0 25%, var(--sf-magenta) 25% 50%, var(--sf-orange) 50% 75%, var(--sf-amber) 75% 100%);
+  --sf-display: 'Barlow Condensed', 'Barlow', 'Inter Variable', sans-serif;
+  --sf-body: 'Barlow', 'Inter Variable', Inter, sans-serif;
+  --sf-radius: 3px;
+  --sf-chamfer: 10px;
+}
+html.dark[data-skin='synthfield'] {
+  --bg-primary: #0a0d1f;
+  --bg-secondary: #10142b;
+  --bg-tertiary: #181d3a;
+  --bg-hover: #222a4e;
+  --bg-code: #070915;
+  --border-subtle: rgba(236, 230, 214, 0.11);
+  --border-strong: rgba(236, 230, 214, 0.26);
+  --text-primary: #f1ecdf;
+  --text-secondary: #b3b2c4;
+  --text-muted: #8086a3;
+  --accent: #ff7a2f;
+  --accent-soft: #ff9a5c;
+  --accent-glow: rgba(255, 122, 47, 0.35);
+  --brand: #ff3d7f;
+  --brand-soft: #f1ecdf;
+  --neon-pink: #ff3d7f;
+  --neon-cyan: #59d8ff;
+  --sunset: linear-gradient(100deg, #ff3d7f 0%, #ff7a2f 60%, #ffb23d 100%);
+  --focus-ring: var(--neon-cyan);
+  color-scheme: dark;
+}
+/* Light: a Starfield ship terminal — bone-white panels, ink type, the same stripe */
+html.light[data-skin='synthfield'] {
+  --bg-primary: #ebe6d9;
+  --bg-secondary: #f6f2e8;
+  --bg-tertiary: #e0dacb;
+  --bg-hover: #d5cebd;
+  --bg-code: #f2eee3;
+  --border-subtle: rgba(20, 22, 38, 0.13);
+  --border-strong: rgba(20, 22, 38, 0.3);
+  --text-primary: #15172a;
+  --text-secondary: #4a4c5e;
+  --text-muted: #6c6d7c;
+  --accent: #e2551b;
+  --accent-soft: #c94a16;
+  --accent-glow: rgba(226, 85, 27, 0.25);
+  --brand: #d6245f;
+  --brand-soft: #15172a;
+  --neon-pink: #d6245f;
+  --neon-cyan: #1f63e0;
+  --sunset: linear-gradient(100deg, #e0306f 0%, #ec6a22 60%, #f0a51c 100%);
+  --focus-ring: #1f63e0;
+}
+
+/* ── type ────────────────────────────────────────────────────────────────── */
+html[data-skin='synthfield'] body { font-family: var(--sf-body); font-size: 15px; }
+html[data-skin='synthfield'] .prose-shellb { font-size: 1rem; line-height: 1.65; }
+html[data-skin='synthfield'] .prose-shellb h1,
+html[data-skin='synthfield'] .prose-shellb h2,
+html[data-skin='synthfield'] .prose-shellb h3 {
+  font-family: var(--sf-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+}
+html[data-skin='synthfield'] .prose-shellb h1 { font-size: 1.6em; }
+html[data-skin='synthfield'] .prose-shellb h2 { font-size: 1.35em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-subtle); position: relative; }
+html[data-skin='synthfield'] .prose-shellb h2::after {
+  content: ''; position: absolute; left: 0; bottom: -1px; width: 56px; height: 2px; background: var(--sf-stripe);
+}
+html[data-skin='synthfield'] .prose-shellb a { color: var(--neon-cyan); text-decoration-color: color-mix(in srgb, var(--neon-cyan) 40%, transparent); }
+html[data-skin='synthfield'] .prose-shellb li::marker { color: var(--sf-orange); }
+html[data-skin='synthfield'] .prose-shellb blockquote { border-left: 0; padding-left: 1.1em; position: relative; }
+html[data-skin='synthfield'] .prose-shellb blockquote::before { content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em; width: 3px; background: var(--sf-stripe-v); }
+html[data-skin='synthfield'] .prose-shellb th {
+  font-family: var(--sf-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85em;
+}
+html[data-skin='synthfield'] .prose-shellb pre,
+html[data-skin='synthfield'] .prose-shellb :not(pre) > code { border-radius: var(--sf-radius); }
+html[data-skin='synthfield'] ::selection { background: rgba(255, 61, 127, 0.32); }
+
+/* ── geometry: everything that was a soft card becomes a hard-edged panel ─ */
+html[data-skin='synthfield'] :where([class*='rounded-md'], [class*='rounded-lg'], [class*='rounded-xl'], [class*='rounded-2xl'],
+  [class*='rounded-3xl'], [class*='rounded-[20px]']) { border-radius: var(--sf-radius) !important; }
+html[data-skin='synthfield'] .shadow-lg, html[data-skin='synthfield'] .shadow-xl, html[data-skin='synthfield'] .shadow-2xl {
+  box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-subtle) !important;
+}
+
+/* primary buttons: the stripe as a sunset slab, one chamfered corner, no pill. ~= matches the exact class only: the
+   tints (bg-[var(--accent)]/10, hover:bg-[var(--accent)]/20…) on selected rows and chips must stay tints */
+html[data-skin='synthfield'] [class~='bg-[var(--accent)]'] {
+  background-image: var(--sunset);
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - var(--sf-chamfer)) 0, 100% var(--sf-chamfer), 100% 100%, 0 100%);
+  box-shadow: none;
+  font-family: var(--sf-display); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+}
+html.dark[data-skin='synthfield'] [class~='bg-[var(--accent)]'] { filter: drop-shadow(0 0 10px rgba(255, 61, 127, 0.35)); }
+/* icon-only round buttons (send, record) keep their shape but go square */
+html[data-skin='synthfield'] [class~='bg-[var(--accent)]'][class*='rounded-full'] { clip-path: none; border-radius: var(--sf-radius) !important; }
+
+html[data-skin='synthfield'] kbd { font-family: 'JetBrains Mono Variable', monospace; border-radius: 2px; letter-spacing: 0; text-transform: none; }
+
+/* ── backdrop: stars, a banded planet limb, a faint survey grid ─────────── */
+html.dark[data-skin='synthfield'] body {
+  background:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(1px 1px at 27% 64%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 41% 32%, rgba(255,240,220,.8), transparent 60%),
+    radial-gradient(1px 1px at 58% 12%, rgba(255,255,255,.6), transparent 60%),
+    radial-gradient(1px 1px at 66% 47%, rgba(200,220,255,.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 79% 26%, rgba(255,255,255,.85), transparent 60%),
+    radial-gradient(1px 1px at 88% 58%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1px 1px at 94% 9%, rgba(255,220,240,.65), transparent 60%),
+    radial-gradient(1px 1px at 7% 79%, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(1px 1px at 35% 88%, rgba(255,255,255,.4), transparent 60%),
+    radial-gradient(1px 1px at 50% 72%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1px 1px at 73% 81%, rgba(255,255,255,.4), transparent 60%),
+    radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,.35), transparent 60%) 0 0 / 211px 197px,
+    radial-gradient(1px 1px at 140px 90px, rgba(200,215,255,.3), transparent 60%) 0 0 / 263px 241px,
+    radial-gradient(1px 1px at 70px 160px, rgba(255,230,240,.28), transparent 60%) 0 0 / 307px 283px,
+    radial-gradient(ellipse 70% 40% at 80% -5%, rgba(61, 123, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 90% 50% at 50% 115%, rgba(255, 61, 127, 0.18), transparent 70%),
+    var(--bg-primary);
+  background-attachment: fixed;
+}
+/* the planet: a synthwave sun sliced into bands, sitting low on the right like a Starfield system map */
+html.dark[data-skin='synthfield'] #root::after {
+  content: ''; position: fixed; pointer-events: none; z-index: -1;
+  width: 70vmin; height: 70vmin; right: -14vmin; bottom: -26vmin; border-radius: 50%;
+  background: linear-gradient(180deg, #ffd25e 0%, #ff8a3a 34%, #ff3d7f 66%, #7a35ff 100%);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 16px, transparent 16px 22px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 16px, transparent 16px 22px);
+  opacity: 0.5;
+}
+/* a thin orbit ring around it, the Starfield system-map touch */
+html.dark[data-skin='synthfield'] body::after {
+  content: ''; position: fixed; pointer-events: none; z-index: -1;
+  width: 108vmin; height: 34vmin; right: -33vmin; bottom: 4vmin; border-radius: 50%;
+  border: 1px solid rgba(236, 230, 214, 0.13); transform: rotate(-12deg);
+}
+html.dark[data-skin='synthfield'] #root::before {
+  content: ''; position: fixed; left: -50%; right: -50%; bottom: 0; height: 30vh; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(89, 216, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(89, 216, 255, 0.16) 1px, transparent 1px);
+  background-size: 72px 48px;
+  transform: perspective(420px) rotateX(66deg); transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 80%); mask-image: linear-gradient(to top, #000 0%, transparent 80%);
+  opacity: 0.5;
+}
+html.light[data-skin='synthfield'] body {
+  background:
+    linear-gradient(rgba(20, 22, 38, 0.035) 1px, transparent 1px) 0 0 / 100% 32px,
+    linear-gradient(90deg, rgba(20, 22, 38, 0.035) 1px, transparent 1px) 0 0 / 32px 100%,
+    var(--bg-primary);
+}
+html.dj-live #root::after { opacity: 0 !important; transition: opacity 1.2s ease; }
+
+/* ── chrome ──────────────────────────────────────────────────────────────── */
+/* sidebar: a bulkhead panel with the stripe running down its spine */
+html[data-skin='synthfield'] .sf-sidebar { position: relative; box-shadow: none; }
+html.dark[data-skin='synthfield'] .sf-sidebar { background: color-mix(in srgb, var(--bg-secondary) 92%, transparent); backdrop-filter: blur(8px); }
+html[data-skin='synthfield'] .sf-sidebar::before {
+  content: ''; position: absolute; top: 0; right: -1px; width: 2px; height: 96px; background: var(--sf-stripe-v); z-index: 1;
+}
+html[data-skin='synthfield'] .sf-brand {
+  font-family: var(--sf-display); font-weight: 700; font-size: 1.2rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-primary) !important; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+html[data-skin='synthfield'] .sf-brand::before { content: ''; width: 18px; height: 10px; background: var(--sf-stripe); }
+
+/* section labels: condensed caps with a leading tick, like a ship's HUD header */
+html[data-skin='synthfield'] .sf-label {
+  font-family: var(--sf-display); font-weight: 600; font-size: 11.5px !important; text-transform: uppercase; letter-spacing: 0.16em;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+html[data-skin='synthfield'] div.sf-label::before { content: ''; width: 6px; height: 1px; background: currentColor; opacity: 0.7; }
+html[data-skin='synthfield'] div.sf-label::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); margin-left: 0.3rem; }
+
+/* active conversation: an orange rail on the left edge instead of a filled pill */
+html[data-skin='synthfield'] .sf-sidebar [class*='bg-[var(--bg-hover)]'][class*='cursor-pointer'] {
+  box-shadow: inset 2px 0 0 var(--sf-orange); background: linear-gradient(90deg, color-mix(in srgb, var(--sf-orange) 14%, transparent), transparent 80%);
+}
+
+/* top bar: title in condensed caps over a hairline */
+html[data-skin='synthfield'] .sf-topbar { background: color-mix(in srgb, var(--bg-primary) 70%, transparent); backdrop-filter: blur(6px); position: relative; z-index: 1; }
+html[data-skin='synthfield'] .sf-topbar .text-sm.font-medium,
+html[data-skin='synthfield'] .sf-topbar > div > span.text-sm {
+  font-family: var(--sf-display); font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+
+/* app rail: square instrument keys */
+html[data-skin='synthfield'] nav [class*='rounded-r-full'] { border-radius: 0 !important; background: var(--sf-orange) !important; width: 3px; }
+
+/* ── welcome ─────────────────────────────────────────────────────────────── */
+html[data-skin='synthfield'] .sf-hero > :first-child { border-radius: 50% !important; box-shadow: 0 0 0 1px var(--border-strong), 0 0 0 7px var(--bg-primary), 0 0 0 8px var(--border-subtle) !important; }
+html[data-skin='synthfield'] .sf-hero h1 {
+  font-family: var(--sf-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em;
+  font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.05; margin-top: 0.5rem; background: none; padding-bottom: 0;
+}
+html[data-skin='synthfield'] .sf-hero h1::after {
+  content: ''; display: block; width: 132px; height: 5px; margin: 0.9rem auto 0.2rem; background: var(--sf-stripe);
+}
+html[data-skin='synthfield'] .sf-hero h1 + p { font-size: 14.5px; }
+html[data-skin='synthfield'] .sf-hero h1 + p > span:first-child {
+  font-family: var(--sf-display); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; font-size: 1.05em;
+}
+
+/* quick-start cards: mission tiles with corner brackets and a numbered readout */
+html[data-skin='synthfield'] .sf-hero > div.grid { counter-reset: sf-mission; gap: 12px; }
+html[data-skin='synthfield'] .sf-card {
+  position: relative; counter-increment: sf-mission; padding: 16px 16px 14px !important;
+  background: color-mix(in srgb, var(--bg-secondary) 82%, transparent) !important; backdrop-filter: blur(6px);
+  border-radius: 0 !important;
+  background-image:
+    linear-gradient(var(--text-secondary), var(--text-secondary)), linear-gradient(var(--text-secondary), var(--text-secondary)),
+    linear-gradient(var(--text-secondary), var(--text-secondary)), linear-gradient(var(--text-secondary), var(--text-secondary)) !important;
+  background-repeat: no-repeat !important;
+  background-size: 10px 1px, 1px 10px, 10px 1px, 1px 10px !important;
+  background-position: right -1px top -1px, right -1px top -1px, left -1px bottom -1px, left -1px bottom -1px !important;
+  transition: border-color .15s, transform .15s, background-color .15s;
+}
+html[data-skin='synthfield'] .sf-card::before {
+  content: '0' counter(sf-mission); position: absolute; top: 14px; right: 16px;
+  font-family: 'JetBrains Mono Variable', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted);
+}
+html[data-skin='synthfield'] .sf-card::after {
+  content: ''; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 2px; background: var(--sf-stripe-v);
+  transform: scaleY(0); transform-origin: top; transition: transform .2s ease;
+}
+html[data-skin='synthfield'] .sf-card:hover { transform: translateY(-1px); background-color: color-mix(in srgb, var(--bg-hover) 85%, transparent) !important; }
+html[data-skin='synthfield'] .sf-card:hover::after { transform: scaleY(1); }
+html[data-skin='synthfield'] .sf-card > div:first-child {
+  font-family: var(--sf-display); font-weight: 600; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+html[data-skin='synthfield'] .sf-card > div:last-child { font-size: 13px; margin-top: 4px; }
+
+html[data-skin='synthfield'] .sf-tagline {
+  font-family: 'JetBrains Mono Variable', monospace; font-size: 10.5px !important; letter-spacing: 0.08em; text-transform: uppercase;
+}
+html[data-skin='synthfield'] .sf-tagline::before { content: '◢ '; color: var(--sf-orange); }
+
+/* ── composer: a console with bracketed corners and a stripe on the lip ─ */
+html[data-skin='synthfield'] .sf-composer {
+  /* backdrop-filter makes this a stacking context, which traps the agent menu and other pop-ups inside it: lift the
+     whole composer above the chat so they still open over the messages */
+  position: relative; z-index: 20; border-radius: 0 !important;
+  background: color-mix(in srgb, var(--bg-secondary) 96%, transparent) !important; backdrop-filter: blur(14px);
+}
+html[data-skin='synthfield'] .sf-composer::before {
+  content: ''; position: absolute; left: -1px; top: -1px; width: 64px; height: 2px; background: var(--sf-stripe);
+}
+html[data-skin='synthfield'] .sf-composer::after {
+  content: ''; position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; pointer-events: none;
+  border-right: 1px solid var(--text-secondary); border-bottom: 1px solid var(--text-secondary);
+}
+html[data-skin='synthfield'] .sf-composer textarea { font-family: var(--sf-body); font-size: 15px; }
+html[data-skin='synthfield'] .sf-composer textarea::placeholder { letter-spacing: 0.02em; }
+
+/* ── the other apps (Studio, Code, Library, Codex, Research, Plans, Assets, Scheduled, Activity, Models, Projects) ─ */
+/* page titles: condensed caps with a short stripe underneath */
+html[data-skin='synthfield'] :where(h1[class*='tracking-tight']:not([class*='text-base'])) {
+  font-family: var(--sf-display); font-weight: 600; font-size: 1.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+  line-height: 1.15; padding-bottom: 10px;
+  background: var(--sf-stripe) no-repeat left bottom / 64px 3px;
+}
+/* section labels ("WORKSPACES", "MEMORY RIGHT NOW", "SCOUTS"…) are already caps: give them the HUD face */
+html[data-skin='synthfield'] [class*='uppercase'][class*='tracking-w']:not(kbd) {
+  font-family: var(--sf-display); font-weight: 600; letter-spacing: 0.16em;
+}
+html[data-skin='synthfield'] h2[class*='uppercase'][class*='tracking-w'] { font-size: 12.5px; }
+/* app top bars (Studio, Code, a Studio project): same caps title as the chat bar */
+html[data-skin='synthfield'] header.h-12 { background: color-mix(in srgb, var(--bg-primary) 70%, transparent); backdrop-filter: blur(6px); position: relative; z-index: 1; }
+html[data-skin='synthfield'] header.h-12 > div > span.font-semibold {
+  font-family: var(--sf-display); font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+/* the planet is the welcome screen's hero; on working pages it sinks back so it doesn't fight the content */
+html.dark[data-skin='synthfield']:not(:has(.sf-hero)) #root::after { opacity: 0.16; }
+html.dark[data-skin='synthfield']:not(:has(.sf-hero)) body::after { opacity: 0.5; }
+/* a disabled primary button reads as an unlit slab rather than a muddy gradient */
+html[data-skin='synthfield'] [class~='bg-[var(--accent)]']:disabled {
+  background: var(--bg-tertiary) !important; background-image: none !important; color: var(--text-muted) !important;
+  filter: none !important; opacity: 1 !important; cursor: not-allowed;
+}
+/* Firefox ignores ::-webkit-scrollbar and drew a white track down the sidebar */
+html.dark[data-skin='synthfield'] * { scrollbar-width: thin; scrollbar-color: rgba(236, 230, 214, 0.18) transparent; }
+html.light[data-skin='synthfield'] * { scrollbar-width: thin; scrollbar-color: rgba(20, 22, 38, 0.22) transparent; }
+
+/* ── motion & misc ───────────────────────────────────────────────────────── */
+html[data-skin='synthfield'] .caret::after { background: var(--sf-orange); width: 0.55em; }
+html.dark[data-skin='synthfield'] .caret::after { box-shadow: 0 0 8px var(--sf-orange); }
+html[data-skin='synthfield'] .think-stream {
+  background: linear-gradient(90deg, transparent 0%, rgba(61, 123, 255, 0.14) 35%, rgba(255, 61, 127, 0.14) 65%, transparent 100%);
+  background-size: 200% 100%;
+}
+html[data-skin='synthfield'] ::-webkit-scrollbar-thumb { border-radius: 0; background: rgba(236, 230, 214, 0.18); background-clip: padding-box; }
+html[data-skin='synthfield'] ::-webkit-scrollbar-thumb:hover { background: var(--sf-orange); background-clip: padding-box; }
+
+/* syntax colours from the same five inks */
+html.dark[data-skin='synthfield'] .hljs { color: #ece6d6; }
+html.dark[data-skin='synthfield'] .hljs-comment, html.dark[data-skin='synthfield'] .hljs-quote { color: #6f7596; }
+html.dark[data-skin='synthfield'] .hljs-keyword, html.dark[data-skin='synthfield'] .hljs-selector-tag,
+html.dark[data-skin='synthfield'] .hljs-literal, html.dark[data-skin='synthfield'] .hljs-tag,
+html.dark[data-skin='synthfield'] .hljs-name { color: #ff5c92; }
+html.dark[data-skin='synthfield'] .hljs-string, html.dark[data-skin='synthfield'] .hljs-regexp,
+html.dark[data-skin='synthfield'] .hljs-addition { color: #ffc23d; }
+html.dark[data-skin='synthfield'] .hljs-number, html.dark[data-skin='synthfield'] .hljs-symbol,
+html.dark[data-skin='synthfield'] .hljs-bullet { color: #ff9a5c; }
+html.dark[data-skin='synthfield'] .hljs-title, html.dark[data-skin='synthfield'] .hljs-section,
+html.dark[data-skin='synthfield'] .hljs-title.function_ { color: #59d8ff; }
+html.dark[data-skin='synthfield'] .hljs-type, html.dark[data-skin='synthfield'] .hljs-built_in,
+html.dark[data-skin='synthfield'] .hljs-title.class_ { color: #8fb0ff; }
+html.dark[data-skin='synthfield'] .hljs-attr, html.dark[data-skin='synthfield'] .hljs-attribute,
+html.dark[data-skin='synthfield'] .hljs-variable, html.dark[data-skin='synthfield'] .hljs-property { color: #f1ecdf; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-skin='synthfield'] .sf-card, html[data-skin='synthfield'] .sf-card::after { transition: none; }
+}

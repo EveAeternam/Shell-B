@@ -1,0 +1,508 @@
+// Curated World Wonders: Ancient Wonders, New 7 Wonders, and Natural Wonders of Earth.
+import type * as ML from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
+import type { MapLib } from './core';
+
+export interface WorldWonder {
+  id: string;
+  name: string;
+  category: 'ancient' | 'modern' | 'natural' | 'prehistoric';
+  location: string;
+  country: string;
+  lat: number;
+  lon: number;
+  yearBuilt?: string;
+  unescoYear?: number;
+  desc: string;
+  highlight?: string;
+}
+
+export const WORLD_WONDERS: WorldWonder[] = [
+  // ── ANCIENT WONDERS OF THE WORLD ─────────────────────────────────────────
+  {
+    id: 'giza-pyramid',
+    name: 'Great Pyramid of Giza',
+    category: 'ancient',
+    location: 'Giza Plateau, Greater Cairo',
+    country: 'Egypt',
+    lat: 29.9792,
+    lon: 31.1342,
+    yearBuilt: 'c. 2560 BC',
+    unescoYear: 1979,
+    desc: 'The oldest and only substantially surviving monument of the Seven Wonders of the Ancient World. Built as a tomb for Fourth Dynasty pharaoh Khufu.',
+    highlight: 'Remained the tallest human-made structure in the world for over 3,800 years until Lincoln Cathedral in 1311 AD.',
+  },
+  {
+    id: 'hanging-gardens',
+    name: 'Hanging Gardens of Babylon',
+    category: 'ancient',
+    location: 'Hillah, Babil Governorate',
+    country: 'Iraq',
+    lat: 32.5422,
+    lon: 44.4211,
+    yearBuilt: 'c. 600 BC',
+    desc: 'A tiered ascending series of rooftop gardens with trees, shrubs, and vines, reputedly built by King Nebuchadnezzar II for his Median wife Amytis.',
+    highlight: 'The only ancient wonder whose exact archaeological location has not been definitively proven.',
+  },
+  {
+    id: 'temple-artemis',
+    name: 'Temple of Artemis at Ephesus',
+    category: 'ancient',
+    location: 'Selçuk, Izmir',
+    country: 'Turkey',
+    lat: 37.9497,
+    lon: 27.3639,
+    yearBuilt: 'c. 550 BC',
+    desc: 'A colossal Greek temple dedicated to the goddess Artemis, built by Croesus of Lydia and rebuilt after being burned by Herostratus.',
+    highlight: 'Antipater of Sidon praised it as the most dazzling of all wonders: "the sun has never looked upon its equal outside Olympus."',
+  },
+  {
+    id: 'statue-zeus',
+    name: 'Statue of Zeus at Olympia',
+    category: 'ancient',
+    location: 'Olympia, Peloponnese',
+    country: 'Greece',
+    lat: 37.6378,
+    lon: 21.6300,
+    yearBuilt: 'c. 435 BC',
+    desc: 'A giant chryselephantine (ivory plates and gold panels) sculpture of Zeus seated on an elaborate cedarwood throne, crafted by the sculptor Phidias.',
+    highlight: 'Stood over 12 meters tall inside the Temple of Zeus; honored during the ancient Olympic Games.',
+  },
+  {
+    id: 'mausoleum-halicarnassus',
+    name: 'Mausoleum at Halicarnassus',
+    category: 'ancient',
+    location: 'Bodrum, Muğla',
+    country: 'Turkey',
+    lat: 37.0378,
+    lon: 27.4242,
+    yearBuilt: 'c. 350 BC',
+    desc: 'An ornate tomb built for Mausolus, satrap of Caria, and his sister-wife Artemisia II. The monument was so renowned that "mausoleum" became the word for any grandiose above-ground tomb.',
+    highlight: 'Stood 45 meters tall with relief friezes on all four sides by famous Greek sculptors Scopas, Bryaxis, and Leochares.',
+  },
+  {
+    id: 'colossus-rhodes',
+    name: 'Colossus of Rhodes',
+    category: 'ancient',
+    location: 'Rhodes Harbor, Dodecanese',
+    country: 'Greece',
+    lat: 36.4511,
+    lon: 28.2258,
+    yearBuilt: '280 BC',
+    desc: 'A colossal bronze statue of the sun-god Helios erected by Chares of Lindos to celebrate Rhodes’ successful defense against Demetrius Poliorcetes.',
+    highlight: 'Stood roughly 33 meters high, about the height of the Statue of Liberty from feet to crown, before being felled by an earthquake in 226 BC.',
+  },
+  {
+    id: 'lighthouse-alexandria',
+    name: 'Lighthouse of Alexandria (Pharos)',
+    category: 'ancient',
+    location: 'Pharos Island, Alexandria',
+    country: 'Egypt',
+    lat: 31.2140,
+    lon: 29.8850,
+    yearBuilt: 'c. 280 BC',
+    desc: 'Built during the Ptolemaic Kingdom, this three-tier beacon stood over 100 meters tall and guided trade ships into Alexandria’s bustling Mediterranean port.',
+    highlight: 'One of the longest-surviving ancient wonders; its light was said to be visible from ships 50 km out to sea.',
+  },
+
+  // ── NEW 7 WONDERS OF THE WORLD ───────────────────────────────────────────
+  {
+    id: 'great-wall',
+    name: 'Great Wall of China',
+    category: 'modern',
+    location: 'Northern China',
+    country: 'China',
+    lat: 40.4319,
+    lon: 116.5704,
+    yearBuilt: '7th c. BC – 17th c. AD',
+    unescoYear: 1987,
+    desc: 'A series of fortifications spanning over 21,000 kilometers across deserts, grasslands, and mountains, constructed across dynasties to protect trade and frontiers.',
+    highlight: 'The longest man-made structure on Earth, featuring brick watchtowers, beacon towers, and garrison passes like Mutianyu and Badaling.',
+  },
+  {
+    id: 'petra',
+    name: 'Petra',
+    category: 'modern',
+    location: 'Ma’an Governorate',
+    country: 'Jordan',
+    lat: 30.3285,
+    lon: 35.4444,
+    yearBuilt: 'c. 300 BC',
+    unescoYear: 1985,
+    desc: 'The famed "Rose City", capital of the Nabataean Kingdom, carved directly into vibrant pink sandstone cliffs through the narrow Siq gorge.',
+    highlight: 'Features the iconic Al-Khazneh (Treasury) and Ad-Deir (Monastery) with advanced ancient water conduit and cistern engineering.',
+  },
+  {
+    id: 'christ-redeemer',
+    name: 'Christ the Redeemer',
+    category: 'modern',
+    location: 'Mount Corcovado, Rio de Janeiro',
+    country: 'Brazil',
+    lat: -22.9519,
+    lon: -43.2105,
+    yearBuilt: '1931',
+    desc: 'Art Deco statue of Jesus Christ overlooking Rio de Janeiro and Guanabara Bay from the 700-meter peak of Corcovado mountain in Tijuca National Park.',
+    highlight: 'Designed by French sculptor Paul Landowski and built with reinforced concrete faced with six million soapstone tiles.',
+  },
+  {
+    id: 'machu-picchu',
+    name: 'Machu Picchu',
+    category: 'modern',
+    location: 'Eastern Cordillera, Andes',
+    country: 'Peru',
+    lat: -13.1631,
+    lon: -72.5450,
+    yearBuilt: 'c. 1450 AD',
+    unescoYear: 1983,
+    desc: '15th-century Inca royal citadel perched dramatically on a mountain ridge 2,430 meters above the Sacred Valley and Urubamba River.',
+    highlight: 'Classic Inca dry-stone masonry with polished stones cut to fit without mortar; abandoned during the Spanish conquest and brought to world attention in 1911.',
+  },
+  {
+    id: 'chichen-itza',
+    name: 'Chichen Itza (El Castillo)',
+    category: 'modern',
+    location: 'Yucatán Peninsula',
+    country: 'Mexico',
+    lat: 20.6843,
+    lon: -88.5678,
+    yearBuilt: 'c. 600–900 AD',
+    unescoYear: 1988,
+    desc: 'Major Maya city dominated by the step-pyramid temple of Kukulcan (El Castillo), dedicated to the feathered serpent deity.',
+    highlight: 'During the spring and autumn equinoxes, the afternoon sun creates shadows that mimic a serpent slithering down the pyramid stairs.',
+  },
+  {
+    id: 'colosseum',
+    name: 'The Colosseum',
+    category: 'modern',
+    location: 'Piazza del Colosseo, Rome',
+    country: 'Italy',
+    lat: 41.8902,
+    lon: 12.4922,
+    yearBuilt: '72–80 AD',
+    unescoYear: 1980,
+    desc: 'The largest ancient amphitheatre ever built, constructed under Flavian emperors Vespasian and Titus to seat up to 65,000 spectators.',
+    highlight: 'Hosted gladiatorial contests, battle reenactments, and mock sea battles using an intricate underground hypogeum system.',
+  },
+  {
+    id: 'taj-mahal',
+    name: 'Taj Mahal',
+    category: 'modern',
+    location: 'Agra, Uttar Pradesh',
+    country: 'India',
+    lat: 27.1751,
+    lon: 78.0421,
+    yearBuilt: '1632–1653 AD',
+    unescoYear: 1983,
+    desc: 'An ivory-white marble mausoleum on the south bank of the Yamuna River, commissioned by Mughal emperor Shah Jahan for his favorite wife Mumtaz Mahal.',
+    highlight: 'Regarded as the pinnacle of Mughal architecture, incorporating Persian, Islamic, and Indian motifs with semi-precious pietre dure inlay.',
+  },
+
+  // ── NATURAL WONDERS & GEOLOGIC EXTREMES ──────────────────────────────────
+  {
+    id: 'mount-everest',
+    name: 'Mount Everest (Chomolungma)',
+    category: 'natural',
+    location: 'Mahalangur Himal, Himalayas',
+    country: 'Nepal / China',
+    lat: 27.9881,
+    lon: 86.9250,
+    desc: 'Earth’s highest mountain above sea level, reaching 8,848.86 meters. Formed by the tectonic collision of the Indian and Eurasian plates.',
+    highlight: 'The summit touches the stratosphere, enduring hurricane-force jet stream winds and temperatures below -60°C.',
+  },
+  {
+    id: 'mariana-trench',
+    name: 'Mariana Trench (Challenger Deep)',
+    category: 'natural',
+    location: 'Western Pacific Ocean',
+    country: 'International Waters',
+    lat: 11.3733,
+    lon: 142.5917,
+    desc: 'The deepest known oceanic point on Earth, plunging 10,994 meters below sea level in the hadal zone.',
+    highlight: 'Water pressure exceeds 1,086 bar (over 1,000 atmospheres), yet specialized amphipods and snailfish thrive in total darkness.',
+  },
+  {
+    id: 'grand-canyon',
+    name: 'Grand Canyon',
+    category: 'natural',
+    location: 'Colorado Plateau, Arizona',
+    country: 'United States',
+    lat: 36.1069,
+    lon: -112.1129,
+    unescoYear: 1979,
+    desc: 'Steep-sided gorge carved by the Colorado River over 6 million years, exposing nearly two billion years of Earth’s geological history.',
+    highlight: 'Measures 446 km long, up to 29 km wide, and over 1,800 meters deep.',
+  },
+  {
+    id: 'great-barrier-reef',
+    name: 'Great Barrier Reef',
+    category: 'natural',
+    location: 'Coral Sea, Queensland',
+    country: 'Australia',
+    lat: -18.2871,
+    lon: 147.6992,
+    unescoYear: 1981,
+    desc: 'The world’s largest coral reef ecosystem, composed of over 2,900 individual reefs and 900 islands spanning 2,300 kilometers.',
+    highlight: 'The largest single structure made by living organisms, visible from space.',
+  },
+  {
+    id: 'victoria-falls',
+    name: 'Victoria Falls (Mosi-oa-Tunya)',
+    category: 'natural',
+    location: 'Zambezi River',
+    country: 'Zambia / Zimbabwe',
+    lat: -17.9243,
+    lon: 25.8572,
+    unescoYear: 1989,
+    desc: 'Known locally as "The Smoke That Thunders", Victoria Falls forms the largest sheet of falling water on the planet.',
+    highlight: 'Spans 1,708 meters wide and drops 108 meters into a basalt gorge; mist spray rises over 400 meters.',
+  },
+  {
+    id: 'aurora-borealis',
+    name: 'Aurora Borealis (Northern Lights)',
+    category: 'natural',
+    location: 'Auroral Oval (Tromsø)',
+    country: 'Norway / Arctic Circle',
+    lat: 69.6492,
+    lon: 18.9553,
+    desc: 'Cosmic light spectacle generated when solar wind particles collide with atmospheric oxygen and nitrogen atoms along Earth’s magnetic field lines.',
+    highlight: 'Produces rippling curtains of emerald green, violet, and ruby red across the polar night sky.',
+  },
+  {
+    id: 'salar-de-uyuni',
+    name: 'Salar de Uyuni',
+    category: 'natural',
+    location: 'Altiplano, Potosí',
+    country: 'Bolivia',
+    lat: -20.1338,
+    lon: -67.4891,
+    desc: 'The world’s largest salt flat, spanning 10,582 square kilometers at an altitude of 3,656 meters.',
+    highlight: 'When flooded with a thin layer of rainwater, it transforms into the world’s largest natural mirror, reflecting the sky seamlessly.',
+  },
+  {
+    id: 'iguazu-falls',
+    name: 'Iguazu Falls',
+    category: 'natural',
+    location: 'Iguazu River',
+    country: 'Argentina / Brazil',
+    lat: -25.6953,
+    lon: -54.4367,
+    unescoYear: 1984,
+    desc: 'A semicircular cascade system of 275 individual waterfalls spanning 2.7 km through subtropical rainforest.',
+    highlight: 'The "Devil’s Throat" (Garganta del Diablo) chute channels half of the river’s surging torrent.',
+  },
+  {
+    id: 'galapagos',
+    name: 'Galápagos Islands',
+    category: 'natural',
+    location: 'Pacific Ocean',
+    country: 'Ecuador',
+    lat: -0.9538,
+    lon: -90.9656,
+    unescoYear: 1978,
+    desc: 'Volcanic archipelago at the junction of three tectonic plates, celebrated for unique endemic species that inspired Charles Darwin’s theory of natural selection.',
+    highlight: 'Home to giant tortoises, marine iguanas that swim in the ocean, and blue-footed boobies.',
+  },
+  {
+    id: 'dead-sea',
+    name: 'The Dead Sea',
+    category: 'natural',
+    location: 'Jordan Rift Valley',
+    country: 'Jordan / Israel / Palestine',
+    lat: 31.5590,
+    lon: 35.4732,
+    desc: 'Landlocked hypersaline lake whose shores and water surface are 430.5 meters below sea level, Earth’s lowest land elevation.',
+    highlight: 'With 34% salinity (nearly 10 times saltier than the ocean), bathers float effortlessly without swimming.',
+  },
+
+  // ── PREHISTORIC & ENIGMATIC WONDERS ──────────────────────────────────────
+  {
+    id: 'stonehenge',
+    name: 'Stonehenge',
+    category: 'prehistoric',
+    location: 'Salisbury Plain, Wiltshire',
+    country: 'United Kingdom',
+    lat: 51.1789,
+    lon: -1.8262,
+    yearBuilt: 'c. 3000–2000 BC',
+    unescoYear: 1986,
+    desc: 'Prehistoric ring of standing megalithic sarsen stones and bluestones, oriented precisely toward the summer solstice sunrise and winter solstice sunset.',
+    highlight: 'The 25-ton sarsens were transported 25 km and the bluestones over 220 km from the Preseli Hills in Wales without wheel technology.',
+  },
+  {
+    id: 'moai-easter-island',
+    name: 'Easter Island Moai (Rapa Nui)',
+    category: 'prehistoric',
+    location: 'Rano Raraku, Rapa Nui',
+    country: 'Chile',
+    lat: -27.1212,
+    lon: -109.3667,
+    yearBuilt: 'c. 1250–1500 AD',
+    unescoYear: 1995,
+    desc: 'Nearly 1,000 monolithic human statues carved from volcanic tuff by the Rapa Nui people, representing the deified spirits of ancestors.',
+    highlight: 'Averaging 4 meters tall and 14 tons, moved kilometers across volcanic terrain using rope coordination and "walking" rock mechanics.',
+  },
+  {
+    id: 'angkor-wat',
+    name: 'Angkor Wat',
+    category: 'prehistoric',
+    location: 'Siem Reap',
+    country: 'Cambodia',
+    lat: 13.4125,
+    lon: 103.8670,
+    yearBuilt: 'Early 12th c. AD',
+    unescoYear: 1992,
+    desc: 'The largest religious monument in the world, built by Khmer King Suryavarman II as his state temple and eventual mausoleum.',
+    highlight: 'Surrounded by a 190-meter-wide moat and featuring intricate bas-reliefs depicting the Churning of the Ocean of Milk.',
+  },
+  {
+    id: 'nazca-lines',
+    name: 'Nazca Lines',
+    category: 'prehistoric',
+    location: 'Nazca Desert',
+    country: 'Peru',
+    lat: -14.7390,
+    lon: -75.1300,
+    yearBuilt: 'c. 500 BC – 500 AD',
+    unescoYear: 1994,
+    desc: 'Gigantic geoglyphs etched into the arid desert plateau depicting hummingbirds, spiders, monkeys, condors, and geometric lines.',
+    highlight: 'Created by removing reddish pebbles to reveal greyish-white clay beneath; best viewed from an aircraft or high ridge.',
+  },
+];
+
+const SRC = 'sb-wonders';
+const LAYER_GLOW = 'sb-wonders-glow';
+const LAYER_CIRCLE = 'sb-wonders-circle';
+const LAYER_LABEL = 'sb-wonders-label';
+
+export interface WonderLayer {
+  detach: () => void;
+  select: (id: string | null) => void;
+}
+
+export function attachWonders(
+  lib: MapLib,
+  map: ML.Map,
+  onSelect: (wonder: WorldWonder | null) => void
+): WonderLayer {
+  void lib;
+  let selectedId: string | null = null;
+  let gone = false;
+
+  const toGeoJSON = (): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: WORLD_WONDERS.map(w => ({
+      type: 'Feature',
+      properties: {
+        id: w.id,
+        name: w.name,
+        category: w.category,
+        location: w.location,
+        country: w.country,
+        sel: w.id === selectedId,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [w.lon, w.lat],
+      },
+    })),
+  });
+
+  if (!map.getSource(SRC)) {
+    map.addSource(SRC, {
+      type: 'geojson',
+      data: toGeoJSON(),
+    });
+  }
+
+  // Golden halo aura
+  if (!map.getLayer(LAYER_GLOW)) {
+    map.addLayer({
+      id: LAYER_GLOW,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 18, 11],
+        'circle-color': '#f59e0b',
+        'circle-opacity': 0.35,
+        'circle-blur': 0.8,
+      },
+    });
+  }
+
+  // Core monument pin
+  if (!map.getLayer(LAYER_CIRCLE)) {
+    map.addLayer({
+      id: LAYER_CIRCLE,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 7, 5],
+        'circle-color': ['case', ['get', 'sel'], '#fbbf24', '#d97706'],
+        'circle-stroke-color': '#451a03',
+        'circle-stroke-width': 1.5,
+      },
+    });
+  }
+
+  // Wonder title
+  if (!map.getLayer(LAYER_LABEL)) {
+    map.addLayer({
+      id: LAYER_LABEL,
+      type: 'symbol',
+      source: SRC,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Medium'],
+        'text-size': 10.5,
+        'text-offset': [0, 1.2],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': '#fef3c7',
+        'text-halo-color': '#291203',
+        'text-halo-width': 1.5,
+      },
+    });
+  }
+
+  const onClick = (e: ML.MapLayerMouseEvent) => {
+    if (gone) return;
+    const feat = e.features?.[0];
+    const id = feat?.properties?.id;
+    if (id) {
+      select(String(id));
+      const w = WORLD_WONDERS.find(x => x.id === id);
+      onSelect(w ?? null);
+    }
+  };
+
+  const onEnter = () => { map.getCanvas().style.cursor = 'pointer'; };
+  const onLeave = () => { map.getCanvas().style.cursor = ''; };
+
+  map.on('click', LAYER_CIRCLE, onClick);
+  map.on('mouseenter', LAYER_CIRCLE, onEnter);
+  map.on('mouseleave', LAYER_CIRCLE, onLeave);
+
+  function select(id: string | null) {
+    selectedId = id;
+    const src = map.getSource(SRC) as ML.GeoJSONSource | undefined;
+    if (src) src.setData(toGeoJSON());
+  }
+
+  return {
+    select,
+    detach: () => {
+      gone = true;
+      map.off('click', LAYER_CIRCLE, onClick);
+      map.off('mouseenter', LAYER_CIRCLE, onEnter);
+      map.off('mouseleave', LAYER_CIRCLE, onLeave);
+      try {
+        if (map.getLayer(LAYER_LABEL)) map.removeLayer(LAYER_LABEL);
+        if (map.getLayer(LAYER_CIRCLE)) map.removeLayer(LAYER_CIRCLE);
+        if (map.getLayer(LAYER_GLOW)) map.removeLayer(LAYER_GLOW);
+        if (map.getSource(SRC)) map.removeSource(SRC);
+      } catch {}
+    },
+  };
+}

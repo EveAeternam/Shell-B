@@ -1,0 +1,483 @@
+// Historic, famous, and deep-sea shipwrecks across global oceans, seas, and Great Lakes.
+import type * as ML from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
+import type { MapLib } from './core';
+
+export interface Shipwreck {
+  id: string;
+  name: string;
+  vesselType: string;
+  yearSunk: number;
+  depthMeters: number;
+  lat: number;
+  lon: number;
+  flag?: string;
+  casualties?: string;
+  discoveredYear?: number;
+  desc: string;
+  highlight?: string;
+}
+
+export const SHIPWRECKS: Shipwreck[] = [
+  {
+    id: 'titanic',
+    name: 'RMS Titanic',
+    vesselType: 'Olympic-class ocean liner',
+    yearSunk: 1912,
+    depthMeters: 3800,
+    lat: 41.7269,
+    lon: -49.9483,
+    flag: 'United Kingdom',
+    casualties: '1,517 lost',
+    discoveredYear: 1985,
+    desc: 'The most famous shipwreck in history. Sank on her maiden voyage from Southampton to New York after colliding with an iceberg in the North Atlantic.',
+    highlight: 'Discovered by Dr. Robert Ballard and Jean-Louis Michel on September 1, 1985, resting in two main pieces 3.8 km beneath the Atlantic.',
+  },
+  {
+    id: 'bismarck',
+    name: 'Bismarck',
+    vesselType: 'Bismarck-class battleship',
+    yearSunk: 1941,
+    depthMeters: 4791,
+    lat: 48.1667,
+    lon: -16.2000,
+    flag: 'Germany',
+    casualties: '2,100 lost',
+    discoveredYear: 1989,
+    desc: 'Lead ship of the Bismarck class, the largest battleship built by Germany. Sunk by the Royal Navy following the Battle of the Denmark Strait and relentless pursuit.',
+    highlight: 'Discovered in 1989 by Robert Ballard at 4,791 meters depth; the hull sits upright on an extinct underwater volcano.',
+  },
+  {
+    id: 'hms-hood',
+    name: 'HMS Hood',
+    vesselType: 'Admiral-class battlecruiser',
+    yearSunk: 1941,
+    depthMeters: 2800,
+    lat: 63.3333,
+    lon: -31.8333,
+    flag: 'United Kingdom',
+    casualties: '1,415 lost (3 survivors)',
+    discoveredYear: 2001,
+    desc: 'The pride of the Royal Navy for two decades. Exploded and sank in three minutes during the Battle of the Denmark Strait after being struck by shells from Bismarck.',
+    highlight: 'Her ship’s bell was recovered in 2015 by Paul Allen’s research team and is now displayed at the National Museum of the Royal Navy.',
+  },
+  {
+    id: 'endurance',
+    name: 'Endurance',
+    vesselType: 'Three-masted barquentine',
+    yearSunk: 1915,
+    depthMeters: 3008,
+    lat: -68.6558,
+    lon: -52.4419,
+    flag: 'United Kingdom',
+    casualties: '0 lost (all 28 survived)',
+    discoveredYear: 2022,
+    desc: 'Sir Ernest Shackleton’s Imperial Trans-Antarctic Expedition ship, crushed by pack ice in the Weddell Sea. All 28 crew members survived through epic survival across ice and sea.',
+    highlight: 'Found in March 2022 by the Endurance22 expedition, preserved in astonishing pristine condition by cold Antarctic waters and lack of wood-eating microbes.',
+  },
+  {
+    id: 'edmund-fitzgerald',
+    name: 'SS Edmund Fitzgerald',
+    vesselType: 'Great Lakes bulk freighter',
+    yearSunk: 1975,
+    depthMeters: 160,
+    lat: 46.9989,
+    lon: -85.1106,
+    flag: 'United States',
+    casualties: '29 lost',
+    discoveredYear: 1975,
+    desc: 'The largest ship on North America’s Great Lakes when launched. Sank suddenly without a distress call in Lake Superior during a hurricane-force November gale.',
+    highlight: 'Immortalized in Gordon Lightfoot’s ballad; her bell was raised in 1995 as a memorial for the families of the 29 crewmen.',
+  },
+  {
+    id: 'yamato',
+    name: 'Battleship Yamato',
+    vesselType: 'Yamato-class battleship',
+    yearSunk: 1945,
+    depthMeters: 340,
+    lat: 30.7239,
+    lon: 128.0667,
+    flag: 'Japan',
+    casualties: '3,055 lost',
+    discoveredYear: 1985,
+    desc: 'The heaviest and most powerfully armed battleship ever constructed, featuring massive 46 cm (18.1 in) naval rifles. Sunk during Operation Ten-Go by US carrier aircraft.',
+    highlight: 'Resting in the East China Sea south of Kyushu; her forward magazine detonation generated a mushroom cloud visible 160 km away.',
+  },
+  {
+    id: 'lusitania',
+    name: 'RMS Lusitania',
+    vesselType: 'Cunard ocean liner',
+    yearSunk: 1915,
+    depthMeters: 93,
+    lat: 51.4167,
+    lon: -8.5500,
+    flag: 'United Kingdom',
+    casualties: '1,198 lost',
+    discoveredYear: 1935,
+    desc: 'Briefly the world’s largest passenger ship. Torpedoed by German U-boat U-20 18 km off the Old Head of Kinsale, Ireland; her sinking helped turn American public opinion toward WWI.',
+    highlight: 'Sank in just 18 minutes; her wreck lies on her starboard side in 93 meters of water.',
+  },
+  {
+    id: 'andrea-doria',
+    name: 'SS Andrea Doria',
+    vesselType: 'Italian transatlantic ocean liner',
+    yearSunk: 1956,
+    depthMeters: 73,
+    lat: 40.4897,
+    lon: -69.8519,
+    flag: 'Italy',
+    casualties: '46 lost (1,660 saved)',
+    discoveredYear: 1956,
+    desc: 'Icon of Italian elegance and postwar design. Collided in heavy fog with MS Stockholm off Nantucket; one of the most successful maritime rescues in history saved 1,660 passengers.',
+    highlight: 'Known as the "Mount Everest of Scuba Diving" due to challenging depths and strong Atlantic currents.',
+  },
+  {
+    id: 'san-jose',
+    name: 'San José',
+    vesselType: '64-gun Spanish treasure galleon',
+    yearSunk: 1708,
+    depthMeters: 600,
+    lat: 10.2280,
+    lon: -75.7480,
+    flag: 'Spain',
+    casualties: '580 lost',
+    discoveredYear: 2015,
+    desc: 'Flagship of the Spanish Tierra Firme fleet, laden with silver, gold coins, and emeralds worth billions. Sunk in combat with British warships in Wager’s Action off Cartagena.',
+    highlight: 'Often called the "Holy Grail of Shipwrecks" with an estimated treasure cargo valued between $4B and $20B USD.',
+  },
+  {
+    id: 'vasa',
+    name: 'Vasa',
+    vesselType: '64-gun Swedish warship',
+    yearSunk: 1628,
+    depthMeters: 32,
+    lat: 59.3280,
+    lon: 18.0914,
+    flag: 'Sweden',
+    casualties: '30 lost',
+    discoveredYear: 1956,
+    desc: 'Magnificent flagship built for King Gustavus Adolphus, top-heavy and carrying too much armament. Foundered and sank after sailing only 1,300 meters into Stockholm harbor on her maiden voyage.',
+    highlight: 'Raised nearly intact in 1961 after 333 years; now the centerpiece of the Vasa Museum, the most visited museum in Scandinavia.',
+  },
+  {
+    id: 'mary-rose',
+    name: 'Mary Rose',
+    vesselType: 'Tudor navy carrack',
+    yearSunk: 1545,
+    depthMeters: 14,
+    lat: 50.7667,
+    lon: -1.1000,
+    flag: 'Kingdom of England',
+    casualties: '400 lost',
+    discoveredYear: 1971,
+    desc: 'Favorite warship of King Henry VIII, which served for 33 years in wars against France and Scotland. Sank during the Battle of the Solent while engaging a French invasion fleet.',
+    highlight: 'Raised from the seabed in 1982 in one of the most complex marine archaeological recoveries ever performed; yielded 26,000 artifacts.',
+  },
+  {
+    id: 'thistlegorm',
+    name: 'SS Thistlegorm',
+    vesselType: 'Armed merchant freighter',
+    yearSunk: 1941,
+    depthMeters: 30,
+    lat: 27.8142,
+    lon: 33.9214,
+    flag: 'United Kingdom',
+    casualties: '9 lost',
+    discoveredYear: 1956,
+    desc: 'British merchant ship laden with Bedford trucks, BSA motorcycles, Bren gun carriers, and steam locomotives for the Eighth Army in North Africa. Sunk by German Heinkel He 111 bombers.',
+    highlight: 'Rediscovered in the 1950s by Jacques Cousteau; one of the world’s premier wreck diving destinations with trucks and motorbikes still chained in place.',
+  },
+  {
+    id: 'chuuk-lagoon',
+    name: 'Chuuk Lagoon Ghost Fleet',
+    vesselType: 'WWII Imperial Japanese combined fleet anchorage',
+    yearSunk: 1944,
+    depthMeters: 45,
+    lat: 7.3700,
+    lon: 151.8500,
+    flag: 'Japan',
+    casualties: 'Over 4,000 lost',
+    discoveredYear: 1969,
+    desc: 'Japan’s main naval base in the South Pacific, devastated during US Operation Hailstone in 1944. Over 60 warships and merchant vessels and 250 aircraft were sunk in two days.',
+    highlight: 'The world’s largest underwater graveyard of WWII ships, resting in turquoise tropical waters filled with tanks, munitions, and Zero fighter planes.',
+  },
+  {
+    id: 'antikythera',
+    name: 'Antikythera Wreck',
+    vesselType: 'Ancient Roman merchant grain ship',
+    yearSunk: -60,
+    depthMeters: 50,
+    lat: 35.8817,
+    lon: 23.3150,
+    flag: 'Roman Republic',
+    casualties: 'Unknown',
+    discoveredYear: 1900,
+    desc: 'Ancient cargo vessel that sank off the Greek island of Antikythera in the 1st century BC carrying bronze and marble statues and astronomical instruments from Greece to Rome.',
+    highlight: 'Source of the Antikythera Mechanism, the world’s oldest known analog computer, used to predict astronomical positions and eclipses decades in advance.',
+  },
+  {
+    id: 'uss-arizona',
+    name: 'USS Arizona (BB-39)',
+    vesselType: 'Pennsylvania-class battleship',
+    yearSunk: 1941,
+    depthMeters: 12,
+    lat: 21.3650,
+    lon: -157.9500,
+    flag: 'United States',
+    casualties: '1,177 lost',
+    discoveredYear: 1941,
+    desc: 'Catastrophically bombed during the Japanese attack on Pearl Harbor on December 7, 1941. A forward magazine detonated, sinking the ship in nine minutes.',
+    highlight: 'Spanned by the USS Arizona Memorial; the sunken hull still gently releases droplets of oil ("the black tears of Arizona") into the harbor today.',
+  },
+  {
+    id: 'uss-indianapolis',
+    name: 'USS Indianapolis (CA-35)',
+    vesselType: 'Portland-class heavy cruiser',
+    yearSunk: 1945,
+    depthMeters: 5500,
+    lat: 12.0333,
+    lon: 134.8000,
+    flag: 'United States',
+    casualties: '879 lost (316 survived)',
+    discoveredYear: 2017,
+    desc: 'Delivered enriched uranium components for the atomic bomb Little Boy to Tinian, then torpedoed by Japanese submarine I-58 in the Philippine Sea. Survivors endured 4 days of shark attacks and dehydration.',
+    highlight: 'Located in August 2017 by Paul Allen’s R/V Petrel at a depth of 5,500 meters, remarkably intact on the abyssal plain.',
+  },
+  {
+    id: 'britannic',
+    name: 'HMHS Britannic',
+    vesselType: 'Olympic-class ocean liner & hospital ship',
+    yearSunk: 1916,
+    depthMeters: 122,
+    lat: 37.7014,
+    lon: 24.2839,
+    flag: 'United Kingdom',
+    casualties: '30 lost (1,036 saved)',
+    discoveredYear: 1975,
+    desc: 'Sister ship to RMS Titanic, requisitioned as a hospital ship during WWI. Struck a naval mine laid by German submarine SM U-73 in the Kea Channel, Aegean Sea, and sank in 55 minutes.',
+    highlight: 'The largest passenger ship on the seabed; explored by Jacques Cousteau in 1975.',
+  },
+  {
+    id: 'whydah-gally',
+    name: 'Whydah Gally',
+    vesselType: 'Pirate flagship (300-ton galley)',
+    yearSunk: 1717,
+    depthMeters: 9,
+    lat: 41.8900,
+    lon: -69.9500,
+    flag: 'Pirate (Captain "Black Sam" Bellamy)',
+    casualties: '144 lost (2 survivors)',
+    discoveredYear: 1984,
+    desc: 'Flagship of pirate captain "Black Sam" Bellamy, wrecked in a violent nor’easter off Cape Cod with plunder from over 50 captured ships.',
+    highlight: 'The first fully authenticated Golden Age pirate shipwreck ever recovered in US waters, yielding thousands of silver Spanish pieces of eight.',
+  },
+  {
+    id: 'atocha',
+    name: 'Nuestra Señora de Atocha',
+    vesselType: 'Spanish treasure galleon',
+    yearSunk: 1622,
+    depthMeters: 16,
+    lat: 24.5200,
+    lon: -82.2000,
+    flag: 'Spain',
+    casualties: '260 lost (5 survivors)',
+    discoveredYear: 1985,
+    desc: 'Heavily armed rear guard of the Spanish Tierra Firme fleet, carrying 24 tons of silver bullion, 180,000 silver coins, and emeralds. Driven onto coral reefs off the Florida Keys by a hurricane.',
+    highlight: 'Discovered in July 1985 by treasure salvor Mel Fisher after a 16-year quest; over $400 million in gold, silver, and Muzo emeralds recovered.',
+  },
+  {
+    id: 'central-america',
+    name: 'SS Central America (Ship of Gold)',
+    vesselType: 'Sidewheel passenger steamer',
+    yearSunk: 1857,
+    depthMeters: 2200,
+    lat: 31.5833,
+    lon: -77.0333,
+    flag: 'United States',
+    casualties: '425 lost (153 saved)',
+    discoveredYear: 1988,
+    desc: 'Operating during the California Gold Rush, carrying 30,000 pounds of gold bars and coins. Foundered in a Category 2 hurricane off North Carolina; her loss contributed to the Panic of 1857.',
+    highlight: 'Located in 1988 by the Columbus-America Discovery Group using robotic submersibles; recovered tons of gold ingots and rare $20 Double Eagle coins.',
+  },
+  {
+    id: 'erebus-terror',
+    name: 'HMS Erebus & HMS Terror',
+    vesselType: 'Royal Navy bomb vessels / Arctic discovery ships',
+    yearSunk: 1848,
+    depthMeters: 11,
+    lat: 68.2500,
+    lon: -98.8800,
+    flag: 'United Kingdom',
+    casualties: '129 lost (all died)',
+    discoveredYear: 2014,
+    desc: 'Sir John Franklin’s expedition to navigate the Northwest Passage, equipped with steam engines and reinforced iron bows. Became trapped in pack ice near King William Island.',
+    highlight: 'Erebus was discovered in 2014 and Terror in 2016 in pristine condition beneath Arctic ice, guided by traditional Inuit oral histories.',
+  },
+  {
+    id: 'prinz-eugen',
+    name: 'Prinz Eugen',
+    vesselType: 'Admiral Hipper-class heavy cruiser',
+    yearSunk: 1946,
+    depthMeters: 20,
+    lat: 8.7533,
+    lon: 167.7497,
+    flag: 'Germany / US Navy target ship',
+    casualties: '0 (uncrewed target ship)',
+    discoveredYear: 1946,
+    desc: 'Accompanied Bismarck in the Battle of the Denmark Strait. Survived WWII and two atomic bomb detonations during Operation Crossroads at Bikini Atoll before capsizing at Kwajalein Atoll.',
+    highlight: 'Her stern and propeller shafts remain visible protruding above the turquoise lagoon waters of Kwajalein.',
+  },
+  {
+    id: 'queen-anne-revenge',
+    name: 'Queen Anne’s Revenge',
+    vesselType: 'Frigate (Blackbeard’s flagship)',
+    yearSunk: 1718,
+    depthMeters: 8,
+    lat: 34.6900,
+    lon: -76.6800,
+    flag: 'Pirate (Blackbeard / Edward Teach)',
+    casualties: '0 lost',
+    discoveredYear: 1996,
+    desc: 'The notorious flagship of English pirate Blackbeard. Originally a French slave ship (La Concorde) captured and refitted with 40 cannons; ran aground at Beaufort Inlet, North Carolina.',
+    highlight: 'Identified by numerous bronze cannons, medical equipment, and lead cannonballs; confirmed in 2011 as Blackbeard’s flagship.',
+  },
+];
+
+const SRC = 'sb-shipwrecks';
+const LAYER_CIRCLE = 'sb-shipwrecks-circle';
+const LAYER_LABEL = 'sb-shipwrecks-label';
+const LAYER_GLOW = 'sb-shipwrecks-glow';
+
+export interface ShipwreckLayer {
+  detach: () => void;
+  select: (id: string | null) => void;
+}
+
+export function attachShipwrecks(
+  lib: MapLib,
+  map: ML.Map,
+  onSelect: (wreck: Shipwreck | null) => void
+): ShipwreckLayer {
+  void lib;
+  let selectedId: string | null = null;
+  let gone = false;
+
+  const toGeoJSON = (): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: SHIPWRECKS.map(w => ({
+      type: 'Feature',
+      properties: {
+        id: w.id,
+        name: w.name,
+        vesselType: w.vesselType,
+        yearSunk: w.yearSunk,
+        depthMeters: w.depthMeters,
+        depthLabel: `${w.depthMeters.toLocaleString()}m`,
+        sel: w.id === selectedId,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [w.lon, w.lat],
+      },
+    })),
+  });
+
+  if (!map.getSource(SRC)) {
+    map.addSource(SRC, {
+      type: 'geojson',
+      data: toGeoJSON(),
+    });
+  }
+
+  // Soft depth glow aura
+  if (!map.getLayer(LAYER_GLOW)) {
+    map.addLayer({
+      id: LAYER_GLOW,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 16, 10],
+        'circle-color': '#06b6d4',
+        'circle-opacity': 0.35,
+        'circle-blur': 0.8,
+      },
+    });
+  }
+
+  // Core nautical marker
+  if (!map.getLayer(LAYER_CIRCLE)) {
+    map.addLayer({
+      id: LAYER_CIRCLE,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 6.5, 4.5],
+        'circle-color': ['case', ['get', 'sel'], '#38bdf8', '#0891b2'],
+        'circle-stroke-color': '#032338',
+        'circle-stroke-width': 1.5,
+      },
+    });
+  }
+
+  // Shipwreck name and depth label
+  if (!map.getLayer(LAYER_LABEL)) {
+    map.addLayer({
+      id: LAYER_LABEL,
+      type: 'symbol',
+      source: SRC,
+      layout: {
+        'text-field': ['concat', ['get', 'name'], ' (', ['get', 'depthLabel'], ')'],
+        'text-font': ['Noto Sans Medium'],
+        'text-size': 10,
+        'text-offset': [0, 1.2],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': '#e0f2fe',
+        'text-halo-color': '#021827',
+        'text-halo-width': 1.5,
+      },
+    });
+  }
+
+  const onClick = (e: ML.MapLayerMouseEvent) => {
+    if (gone) return;
+    const feat = e.features?.[0];
+    const id = feat?.properties?.id;
+    if (id) {
+      select(String(id));
+      const w = SHIPWRECKS.find(x => x.id === id);
+      onSelect(w ?? null);
+    }
+  };
+
+  const onEnter = () => { map.getCanvas().style.cursor = 'pointer'; };
+  const onLeave = () => { map.getCanvas().style.cursor = ''; };
+
+  map.on('click', LAYER_CIRCLE, onClick);
+  map.on('mouseenter', LAYER_CIRCLE, onEnter);
+  map.on('mouseleave', LAYER_CIRCLE, onLeave);
+
+  function select(id: string | null) {
+    selectedId = id;
+    const src = map.getSource(SRC) as ML.GeoJSONSource | undefined;
+    if (src) src.setData(toGeoJSON());
+  }
+
+  return {
+    select,
+    detach: () => {
+      gone = true;
+      map.off('click', LAYER_CIRCLE, onClick);
+      map.off('mouseenter', LAYER_CIRCLE, onEnter);
+      map.off('mouseleave', LAYER_CIRCLE, onLeave);
+      try {
+        if (map.getLayer(LAYER_LABEL)) map.removeLayer(LAYER_LABEL);
+        if (map.getLayer(LAYER_CIRCLE)) map.removeLayer(LAYER_CIRCLE);
+        if (map.getLayer(LAYER_GLOW)) map.removeLayer(LAYER_GLOW);
+        if (map.getSource(SRC)) map.removeSource(SRC);
+      } catch {}
+    },
+  };
+}

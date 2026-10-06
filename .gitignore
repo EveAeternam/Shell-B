@@ -1,0 +1,54 @@
+# Runtime state, secrets and personal data stay out of git
+/data/
+/venv/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+
+# Secrets, keys, and credentials
+*.key
+*.pem
+*.p12
+*.crt
+*.env
+*.env.*
+*.secret
+
+# Downloaded models, media, and heavy binaries
+*.bin
+*.onnx
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.ckpt
+*.zim
+*.pmtiles
+*.wav
+*.mp3
+*.flac
+*.m4a
+*.tar.gz
+*.zip
+
+# Frontend build & dependencies
+ui/node_modules/
+ui/dist/
+ui/public/vendor/
+ui/*.tsbuildinfo
+ui/tsconfig.*.tsbuildinfo
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

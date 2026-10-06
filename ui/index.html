@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0d1f" />
+    <title>Shell:B</title>
+    <script>
+      try { if (localStorage.getItem('shellb.theme') === 'light') document.documentElement.className = 'light'; } catch {}
+      // theme before first paint: mirrors the ids in THEMES and DEFAULT_THEME in src/themes/index.ts (Classic sets no data-skin)
+      (function () { var sk = 'synthfield'; try { sk = localStorage.getItem('shellb.skin') || sk; } catch {} if (['synthfield', 'synthwave'].indexOf(sk) >= 0) document.documentElement.dataset.skin = sk; })();
+      // UI scale before first paint: mirrors KEY in src/uiScale.ts
+      try { var us = parseFloat(localStorage.getItem('shellb.uiscale')); if (us > 0 && us !== 1) document.documentElement.style.zoom = Math.min(2, Math.max(0.75, us)); } catch {}
+      // ?shot[=ms]&theme=light — holds the load event so headless `firefox --screenshot` captures a settled page
+      var shot = /[?&]shot(?:=(\d+))?/.exec(location.search);
+      if (shot) {
+        if (/[?&]theme=light/.test(location.search)) document.documentElement.className = 'light';
+        // &skin=<theme id> shoots another theme without changing the saved one
+        var skin = /[?&]skin=(\w+)/.exec(location.search);
+        if (skin) { if (skin[1] === 'classic') delete document.documentElement.dataset.skin; else document.documentElement.dataset.skin = skin[1]; }
+        document.write('<style>*{animation:none!important;transition:none!important}</style><img src="/api/_hold?ms=' + (shot[1] || 4000) + '" style="display:none" alt="">');
+        // &peek=N focuses the Nth rich link (tooltip, widget or artifact link) so its popover is in the shot
+        var peek = /[?&]peek=(\d+)/.exec(location.search);
+        if (peek) setTimeout(function () { var el = document.querySelectorAll('[data-richlink]')[+peek[1]]; if (el) { el.scrollIntoView({ block: 'center' }); el.click(); } }, (shot[1] || 4000) * 0.6);
+        if (/[?&]unpin=radio/.test(location.search)) {
+          try {
+            var p = JSON.parse(localStorage.getItem('shellb.rail.pins') || 'null');
+            if (Array.isArray(p)) localStorage.setItem('shellb.rail.pins', JSON.stringify(p.filter(function(x) { return x !== 'radio'; })));
+            else localStorage.setItem('shellb.rail.pins', JSON.stringify(['studio', 'code', 'library', 'notes', 'codex', 'memory', 'plans', 'activity']));
+          } catch (e) {}
+        }
+        if (/[?&]play=1/.test(location.search)) {
+          setTimeout(function () {
+            window.dispatchEvent(new CustomEvent('shellb:dj', { detail: 'toggle' }));
+          }, (shot[1] || 4000) * 0.25);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "_comment": "CDN URLs that generated pages often use, mapped to the copies in ui/public/vendor so artifacts and project pages work offline. Used by ui/src/offline.ts (chat artifacts) and server/offline.py (project pages and /work files). Patterns follow the scheme-less '//host/...' part; only versions API-compatible with the vendored copy are matched. $1 is the first group.",
+  "rules": [
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/react@18[\\w.\\-]*/umd/react\\.(development|production\\.min)\\.js", "/vendor/react/react.$1.js"],
+    ["//cdnjs\\.cloudflare\\.com/ajax/libs/react/18[\\w.\\-]*/umd/react\\.(development|production\\.min)\\.js", "/vendor/react/react.$1.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/react-dom@18[\\w.\\-]*/umd/react-dom\\.(development|production\\.min)\\.js", "/vendor/react/react-dom.$1.js"],
+    ["//cdnjs\\.cloudflare\\.com/ajax/libs/react-dom/18[\\w.\\-]*/umd/react-dom\\.(development|production\\.min)\\.js", "/vendor/react/react-dom.$1.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/@babel/standalone(?:@7[\\w.\\-]*)?(?:/babel(?:\\.min)?\\.js)?(?![\\w/.\\-@])", "/vendor/babel.min.js"],
+    ["//cdnjs\\.cloudflare\\.com/ajax/libs/babel-standalone/7[\\w.\\-]*/babel(?:\\.min)?\\.js", "/vendor/babel.min.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/chart\\.js(?:@4[\\w.\\-]*)?(?:/dist/chart\\.umd(?:\\.min)?\\.js)?(?![\\w/.\\-@])", "/vendor/chart.js"],
+    ["//cdnjs\\.cloudflare\\.com/ajax/libs/Chart\\.js/4[\\w.\\-]*/chart\\.umd(?:\\.min)?\\.js", "/vendor/chart.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/chartjs-adapter-date-fns(?:@3[\\w.\\-]*)?(?:/dist/chartjs-adapter-date-fns\\.bundle(?:\\.min)?\\.js)?(?![\\w/.\\-@])", "/vendor/chartjs-adapter-date-fns.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/three@0\\.1[5-9]\\d[\\w.\\-]*/build/three\\.module(?:\\.min)?\\.js", "/vendor/three/three.module.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/three@0\\.1[5-9]\\d[\\w.\\-]*/(?:examples/jsm|addons)/", "/vendor/three/addons/"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/d3(?:@7[\\w.\\-]*)?(?:/dist/d3(?:\\.min)?\\.js)?(?![\\w/.\\-@])", "/vendor/d3.min.js"],
+    ["//(?:cdnjs\\.cloudflare\\.com/ajax/libs/d3/7[\\w.\\-]*/d3(?:\\.min)?\\.js|d3js\\.org/d3\\.v7(?:\\.min)?\\.js)", "/vendor/d3.min.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/feather-icons(?:@4[\\w.\\-]*)?(?:/dist/feather(?:\\.min)?\\.js)?(?![\\w/.\\-@])", "/vendor/feather.min.js"],
+    ["//cdnjs\\.cloudflare\\.com/ajax/libs/feather-icons/4[\\w.\\-]*/feather(?:\\.min)?\\.js", "/vendor/feather.min.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/mermaid(?:@1[0-2][\\w.\\-]*)?/dist/mermaid(?:\\.min)?\\.js", "/vendor/mermaid.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/marked(?:@1[2-8][\\w.\\-]*)?/(?:marked\\.min\\.js|lib/marked\\.umd\\.js)", "/vendor/marked.js"],
+    ["//cdn\\.tailwindcss\\.com(?:/3[\\w.\\-]*)?(?:\\?[^\"'\\s<>)]*)?(?![\\w/.\\-@])", "/vendor/tailwind3.js"],
+    ["//(?:unpkg\\.com|cdn\\.jsdelivr\\.net/npm)/@tailwindcss/browser(?:@4[\\w.\\-]*)?(?:/dist/index\\.global\\.js)?(?![\\w/.\\-@])", "/vendor/tailwind.js"],
+    ["//fonts\\.googleapis\\.com/css2?\\?[^\"'\\s<>)]*", "/vendor/fonts/google.css"]
+  ]
+}

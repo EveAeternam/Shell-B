@@ -1,0 +1,451 @@
+// Global orbital & suborbital spaceports and rocket launch facilities.
+import type * as ML from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
+import type { MapLib } from './core';
+
+export interface LaunchSite {
+  id: string;
+  name: string;
+  operator: string;
+  country: string;
+  lat: number;
+  lon: number;
+  status: 'active' | 'under construction' | 'historic';
+  activeLaunchers: string[];
+  launchCount?: number;
+  firstOrbitalLaunch?: string;
+  desc: string;
+  highlight?: string;
+}
+
+export const LAUNCH_SITES: LaunchSite[] = [
+  {
+    id: 'ksc',
+    name: 'Kennedy Space Center (KSC)',
+    operator: 'NASA / SpaceX',
+    country: 'United States',
+    lat: 28.5729,
+    lon: -80.6490,
+    status: 'active',
+    activeLaunchers: ['Falcon 9', 'Falcon Heavy', 'SLS (Space Launch System)'],
+    launchCount: 540,
+    firstOrbitalLaunch: '1967 (Apollo 4 / Saturn V)',
+    desc: 'NASA’s premier human spaceflight center on Merritt Island, Florida. Launch site for Apollo 11, the Space Shuttle program, Artemis missions, and SpaceX Crew Dragon flights from LC-39A and LC-39B.',
+    highlight: 'Pad 39A sent humans to the Moon in 1969 and inaugurated commercial human spaceflight in 2020.',
+  },
+  {
+    id: 'ccsfs',
+    name: 'Cape Canaveral Space Force Station (CCSFS)',
+    operator: 'US Space Force / SpaceX / ULA',
+    country: 'United States',
+    lat: 28.4889,
+    lon: -80.5778,
+    status: 'active',
+    activeLaunchers: ['Falcon 9', 'Atlas V', 'Vulcan Centaur', 'New Glenn (LC-36)'],
+    launchCount: 950,
+    firstOrbitalLaunch: '1958 (Explorer 1)',
+    desc: 'Adjacent to KSC, the Space Coast’s busiest orbital launch center. Hosts SpaceX’s SLC-40 (highest launch cadence on Earth), ULA’s SLC-41, and Blue Origin’s LC-36.',
+    highlight: 'Over 80 orbital launches per year launched from its coastal pads into eastward low-inclination orbits.',
+  },
+  {
+    id: 'starbase',
+    name: 'SpaceX Starbase (Boca Chica)',
+    operator: 'SpaceX',
+    country: 'United States',
+    lat: 25.9972,
+    lon: -97.1558,
+    status: 'active',
+    activeLaunchers: ['Starship / Super Heavy'],
+    launchCount: 15,
+    firstOrbitalLaunch: '2023 (Starship IFT)',
+    desc: 'Dedicated production and orbital launch complex for SpaceX’s next-generation Starship fully reusable super heavy-lift rocket, situated at the southern tip of Texas on the Gulf of Mexico.',
+    highlight: 'Features the world’s tallest rocket launch and catch tower ("Mechazilla") with giant mechanical chopstick arms designed to catch returning boosters in mid-air.',
+  },
+  {
+    id: 'vandenberg',
+    name: 'Vandenberg Space Force Base (VSFB)',
+    operator: 'US Space Force / SpaceX / Firefly',
+    country: 'United States',
+    lat: 34.7420,
+    lon: -120.5724,
+    status: 'active',
+    activeLaunchers: ['Falcon 9 (SLC-4E)', 'Alpha (SLC-2W)', 'Minotaur'],
+    launchCount: 740,
+    firstOrbitalLaunch: '1959 (Discoverer 1)',
+    desc: 'The United States’ West Coast spaceport in Santa Barbara County, California. Specializes in launching payloads southward into polar and Sun-synchronous orbits over the open Pacific.',
+    highlight: 'Launches over the open ocean allow rocket stages to drop safely without overflying populated land.',
+  },
+  {
+    id: 'baikonur',
+    name: 'Baikonur Cosmodrome',
+    operator: 'Roscosmos (leased from Kazakhstan)',
+    country: 'Kazakhstan',
+    lat: 45.9646,
+    lon: 63.3052,
+    status: 'active',
+    activeLaunchers: ['Soyuz-2.1a', 'Soyuz-2.1b', 'Proton-M'],
+    launchCount: 1520,
+    firstOrbitalLaunch: '1957 (Sputnik 1)',
+    desc: 'The world’s first and largest operational space launch facility. Located in the desert steppe of Kazakhstan; birthplace of the Space Age.',
+    highlight: 'Launch site of Sputnik 1 (1957) and Yuri Gagarin (Vostok 1, 1961) from Site 1/5 ("Gagarin’s Start").',
+  },
+  {
+    id: 'guiana-kourou',
+    name: 'Guiana Space Centre (CSG Kourou)',
+    operator: 'ESA / CNES / Arianespace',
+    country: 'French Guiana (France)',
+    lat: 5.2372,
+    lon: -52.7606,
+    status: 'active',
+    activeLaunchers: ['Ariane 6 (ELA-4)', 'Vega-C'],
+    launchCount: 320,
+    firstOrbitalLaunch: '1970 (Diamant B)',
+    desc: 'Europe’s primary spaceport, located just 5° north of the Equator in tropical South America. The Earth’s eastward rotational speed is maximized here (460 m/s), providing immense booster payload efficiency.',
+    highlight: 'Launch site of the James Webb Space Telescope (JWST) aboard an Ariane 5 rocket on Christmas Day 2021.',
+  },
+  {
+    id: 'tanegashima',
+    name: 'Tanegashima Space Center (TNSC)',
+    operator: 'JAXA',
+    country: 'Japan',
+    lat: 30.4000,
+    lon: 130.9700,
+    status: 'active',
+    activeLaunchers: ['H-IIA', 'H3 (Yoshinobu Launch Complex)'],
+    launchCount: 95,
+    firstOrbitalLaunch: '1975 (Kiku-1)',
+    desc: 'Japan’s main rocket launch site, perched on a scenic ocean promontory on Tanegashima island south of Kyushu. Launches Japan’s flagship lunar, interplanetary, and meteorological missions.',
+    highlight: 'Widely considered the most picturesque launch site in the world, with rocket gantries standing directly above coral reefs and ocean breakers.',
+  },
+  {
+    id: 'jiuquan',
+    name: 'Jiuquan Satellite Launch Center (JSLC)',
+    operator: 'CNSA',
+    country: 'China',
+    lat: 40.9606,
+    lon: 100.2983,
+    status: 'active',
+    activeLaunchers: ['Long March 2F', 'Long March 2D', 'Kuaizhou', 'Zhuque-2'],
+    launchCount: 220,
+    firstOrbitalLaunch: '1970 (Dong Fang Hong I)',
+    desc: 'China’s oldest spaceport, located in the Gobi Desert of Inner Mongolia. The sole launch site for China’s crewed Shenzhou spacecraft to the Tiangong space station.',
+    highlight: 'Site of China’s first satellite (1970) and first human in space (Yang Liwei on Shenzhou 5, 2003).',
+  },
+  {
+    id: 'wenchang',
+    name: 'Wenchang Space Launch Site',
+    operator: 'CNSA',
+    country: 'China',
+    lat: 19.6145,
+    lon: 110.9511,
+    status: 'active',
+    activeLaunchers: ['Long March 5', 'Long March 7', 'Long March 8'],
+    launchCount: 35,
+    firstOrbitalLaunch: '2016 (Long March 7)',
+    desc: 'China’s southernmost and most modern spaceport on Hainan Island. Situated at 19°N latitude, enabling maritime transport of massive 5-meter-diameter rocket stages directly by ocean barge.',
+    highlight: 'Launch site for Tianhe (Tiangong core module), Tianwen-1 Mars rover mission, and Chang’e lunar sample return missions.',
+  },
+  {
+    id: 'sriharikota',
+    name: 'Satish Dhawan Space Centre (SDSC SHAR)',
+    operator: 'ISRO',
+    country: 'India',
+    lat: 13.7200,
+    lon: 80.2300,
+    status: 'active',
+    activeLaunchers: ['PSLV', 'GSLV', 'LVM3', 'SSLV'],
+    launchCount: 95,
+    firstOrbitalLaunch: '1980 (Rohini 1 / SLV-3)',
+    desc: 'India’s spaceport on Sriharikota island in Andhra Pradesh on the Bay of Bengal. Features the First and Second Launch Pads, launching communication, lunar, and planetary probes eastward over the ocean.',
+    highlight: 'Launch site of Chandrayaan-3, which made India the first nation to soft-land near the lunar south pole in August 2023.',
+  },
+  {
+    id: 'rocket-lab-mahia',
+    name: 'Rocket Lab Launch Complex 1',
+    operator: 'Rocket Lab',
+    country: 'New Zealand',
+    lat: -39.2614,
+    lon: 177.8647,
+    status: 'active',
+    activeLaunchers: ['Electron'],
+    launchCount: 55,
+    firstOrbitalLaunch: '2018 (Electron / "Still Testing")',
+    desc: 'The world’s first private orbital launch complex, located on the picturesque remote Māhia Peninsula on the North Island of New Zealand.',
+    highlight: 'Boasts minimal marine and air traffic, allowing Rocket Lab to achieve the highest commercial small-satellite launch frequency in the Southern Hemisphere.',
+  },
+  {
+    id: 'vostochny',
+    name: 'Vostochny Cosmodrome',
+    operator: 'Roscosmos',
+    country: 'Russia',
+    lat: 51.8844,
+    lon: 128.3344,
+    status: 'active',
+    activeLaunchers: ['Soyuz-2.1b', 'Angara A5'],
+    launchCount: 18,
+    firstOrbitalLaunch: '2016 (Mikhailo Lomonosov)',
+    desc: 'Russia’s 21st-century domestic spaceport in Amur Oblast, Russian Far East, built to reduce Russian reliance on Baikonur in Kazakhstan.',
+    highlight: 'Inaugurated its heavy-lift Angara A5 pad in April 2024, providing full independent heavy-lift access from sovereign Russian territory.',
+  },
+  {
+    id: 'wallops',
+    name: 'Wallops Flight Facility & MARS',
+    operator: 'NASA / Virginia Space / Rocket Lab',
+    country: 'United States',
+    lat: 37.8333,
+    lon: -75.4833,
+    status: 'active',
+    activeLaunchers: ['Electron (LC-2)', 'Antares 330', 'Black Brant sounding rockets'],
+    launchCount: 120,
+    firstOrbitalLaunch: '1961 (Explorer 9)',
+    desc: 'NASA’s coastal rocket launch range on Wallops Island, Virginia. Hosts Mid-Atlantic Regional Spaceport (MARS) and Rocket Lab Launch Complex 2.',
+    highlight: 'Primary launch site for Cygnus commercial resupply missions delivering cargo and experiments to the International Space Station.',
+  },
+  {
+    id: 'kodiak-pacific',
+    name: 'Pacific Spaceport Complex – Alaska (Kodiak)',
+    operator: 'Alaska Aerospace Corporation',
+    country: 'United States',
+    lat: 57.4358,
+    lon: -152.3392,
+    status: 'active',
+    activeLaunchers: ['Astra Rocket 3', 'Minotaur IV', 'Suborbital targets'],
+    launchCount: 30,
+    firstOrbitalLaunch: '2001 (Kodiak Star / Athena I)',
+    desc: 'Commercial spaceport on narrow Narrow Cape, Kodiak Island, Alaska. Provides clear unobstructed launch azimuths to high-inclination polar and retrograde orbits.',
+    highlight: 'America’s only high-latitude commercial orbital spaceport.',
+  },
+  {
+    id: 'esrange',
+    name: 'Esrange Space Center',
+    operator: 'Swedish Space Corporation (SSC)',
+    country: 'Sweden',
+    lat: 67.8889,
+    lon: 21.0667,
+    status: 'active',
+    activeLaunchers: ['Suborbital sounding rockets (MAXUS, TEXUS)', 'Orbital pad commissioned 2023'],
+    launchCount: 600,
+    desc: 'Located 40 km east of Kiruna in Arctic Swedish Lapland. Inaugurated mainland Europe’s first orbital launch complex in January 2023.',
+    highlight: 'Surrounded by a vast 5,200 square kilometer unpopulated drop zone in the boreal Arctic wilderness.',
+  },
+  {
+    id: 'andoya',
+    name: 'Andøya Spaceport',
+    operator: 'Andøya Space',
+    country: 'Norway',
+    lat: 69.2942,
+    lon: 16.0306,
+    status: 'active',
+    activeLaunchers: ['Isar Aerospace Spectrum', 'Sounding rockets'],
+    launchCount: 1200,
+    desc: 'Arctic Norwegian spaceport on Andøya island in Vesterålen. Officially opened its orbital launch base in November 2023 for European commercial micro-launchers.',
+    highlight: 'Launches northward over the Arctic Ocean and Barents Sea into polar and Sun-synchronous orbits with zero land overflight.',
+  },
+  {
+    id: 'saxavord',
+    name: 'SaxaVord Spaceport',
+    operator: 'SaxaVord Spaceport',
+    country: 'United Kingdom',
+    lat: 60.8175,
+    lon: -0.8500,
+    status: 'active',
+    activeLaunchers: ['RFA ONE (Rocket Factory Augsburg)', 'HyImpulse'],
+    firstOrbitalLaunch: 'Targeting 2024–2025',
+    desc: 'The United Kingdom’s licensed vertical launch spaceport on the Lamba Ness peninsula on the island of Unst, Shetland, the northernmost inhabited island of the UK.',
+    highlight: 'Granted the UK Civil Aviation Authority’s first vertical spaceport license in December 2023.',
+  },
+  {
+    id: 'alcantara',
+    name: 'Alcântara Space Center (CLA)',
+    operator: 'Brazilian Space Agency (AEB) / FAB',
+    country: 'Brazil',
+    lat: -2.3167,
+    lon: -44.3667,
+    status: 'active',
+    activeLaunchers: ['VSB-30 sounding rocket', 'VLM (under development)', 'Innospace HANBIT'],
+    launchCount: 45,
+    desc: 'Located on the Atlantic coast of Maranhão, just 2.3° south of the Equator. One of the closest spaceports in the world to the geographic equator.',
+    highlight: 'Proximity to the equator saves up to 30% fuel on equatorial and geostationary orbit insertions compared to higher latitude spaceports.',
+  },
+  {
+    id: 'uchinoura',
+    name: 'Uchinoura Space Center (USC)',
+    operator: 'JAXA',
+    country: 'Japan',
+    lat: 31.2519,
+    lon: 131.0822,
+    status: 'active',
+    activeLaunchers: ['Epsilon', 'SS-520'],
+    launchCount: 410,
+    firstOrbitalLaunch: '1970 (Osumi)',
+    desc: 'Historic Japanese space center perched on rugged mountains overlooking the Pacific in Kagoshima Prefecture.',
+    highlight: 'Launch site of Japan’s first satellite (Osumi in 1970) and legendary interplanetary probes like Hayabusa (which sampled asteroid Itokawa).',
+  },
+  {
+    id: 'xichang',
+    name: 'Xichang Satellite Launch Center (XSLC)',
+    operator: 'CNSA',
+    country: 'China',
+    lat: 28.2464,
+    lon: 102.0286,
+    status: 'active',
+    activeLaunchers: ['Long March 3A/3B/3C', 'Long March 2C'],
+    launchCount: 180,
+    firstOrbitalLaunch: '1984 (Dong Fang Hong 2)',
+    desc: 'Located in a mountain canyon in Liangshan Yi Autonomous Prefecture, Sichuan. Specializes in launching communication satellites and Beidou navigation satellites into geostationary transfer orbit.',
+    highlight: 'Launch site for Chang’e 3 and Chang’e 4, the first mission in history to land on the far side of the Moon.',
+  },
+  {
+    id: 'san-marco',
+    name: 'San Marco Platform (Broglio Space Centre)',
+    operator: 'ASI (Italian Space Agency) / University of Rome',
+    country: 'Kenya (Offshore platform)',
+    lat: -2.9383,
+    lon: 40.2133,
+    status: 'historic',
+    activeLaunchers: ['Scout B/D/G (Historic)'],
+    launchCount: 27,
+    firstOrbitalLaunch: '1967 (San Marco 2)',
+    desc: 'A historic oil-rig-style offshore mobile launch platform stationed 5 km off the coast of Malindi, Kenya, just 2.9° south of the Equator. Operated between 1964 and 1988.',
+    highlight: 'The world’s first oceanic offshore rocket launch platform, launching NASA Scout rockets with a 100% mission success record.',
+  },
+];
+
+const SRC = 'sb-launchsites';
+const LAYER_GLOW = 'sb-launchsites-glow';
+const LAYER_CIRCLE = 'sb-launchsites-circle';
+const LAYER_LABEL = 'sb-launchsites-label';
+
+export interface LaunchSiteLayer {
+  detach: () => void;
+  select: (id: string | null) => void;
+}
+
+export function attachLaunchSites(
+  lib: MapLib,
+  map: ML.Map,
+  onSelect: (site: LaunchSite | null) => void
+): LaunchSiteLayer {
+  void lib;
+  let selectedId: string | null = null;
+  let gone = false;
+
+  const toGeoJSON = (): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: LAUNCH_SITES.map(s => ({
+      type: 'Feature',
+      properties: {
+        id: s.id,
+        name: s.name,
+        operator: s.operator,
+        country: s.country,
+        status: s.status,
+        launchCount: s.launchCount,
+        sel: s.id === selectedId,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [s.lon, s.lat],
+      },
+    })),
+  });
+
+  if (!map.getSource(SRC)) {
+    map.addSource(SRC, {
+      type: 'geojson',
+      data: toGeoJSON(),
+    });
+  }
+
+  // Flame / launch energy glow aura
+  if (!map.getLayer(LAYER_GLOW)) {
+    map.addLayer({
+      id: LAYER_GLOW,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 18, 12],
+        'circle-color': '#f97316',
+        'circle-opacity': 0.35,
+        'circle-blur': 0.8,
+      },
+    });
+  }
+
+  // Core launch gantry pin
+  if (!map.getLayer(LAYER_CIRCLE)) {
+    map.addLayer({
+      id: LAYER_CIRCLE,
+      type: 'circle',
+      source: SRC,
+      paint: {
+        'circle-radius': ['case', ['get', 'sel'], 7, 5],
+        'circle-color': ['case', ['get', 'sel'], '#fdba74', '#ea580c'],
+        'circle-stroke-color': '#431407',
+        'circle-stroke-width': 1.5,
+      },
+    });
+  }
+
+  // Spaceport label
+  if (!map.getLayer(LAYER_LABEL)) {
+    map.addLayer({
+      id: LAYER_LABEL,
+      type: 'symbol',
+      source: SRC,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Medium'],
+        'text-size': 10,
+        'text-offset': [0, 1.2],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': '#ffedd5',
+        'text-halo-color': '#2a0c02',
+        'text-halo-width': 1.5,
+      },
+    });
+  }
+
+  const onClick = (e: ML.MapLayerMouseEvent) => {
+    if (gone) return;
+    const feat = e.features?.[0];
+    const id = feat?.properties?.id;
+    if (id) {
+      select(String(id));
+      const s = LAUNCH_SITES.find(x => x.id === id);
+      onSelect(s ?? null);
+    }
+  };
+
+  const onEnter = () => { map.getCanvas().style.cursor = 'pointer'; };
+  const onLeave = () => { map.getCanvas().style.cursor = ''; };
+
+  map.on('click', LAYER_CIRCLE, onClick);
+  map.on('mouseenter', LAYER_CIRCLE, onEnter);
+  map.on('mouseleave', LAYER_CIRCLE, onLeave);
+
+  function select(id: string | null) {
+    selectedId = id;
+    const src = map.getSource(SRC) as ML.GeoJSONSource | undefined;
+    if (src) src.setData(toGeoJSON());
+  }
+
+  return {
+    select,
+    detach: () => {
+      gone = true;
+      map.off('click', LAYER_CIRCLE, onClick);
+      map.off('mouseenter', LAYER_CIRCLE, onEnter);
+      map.off('mouseleave', LAYER_CIRCLE, onLeave);
+      try {
+        if (map.getLayer(LAYER_LABEL)) map.removeLayer(LAYER_LABEL);
+        if (map.getLayer(LAYER_CIRCLE)) map.removeLayer(LAYER_CIRCLE);
+        if (map.getLayer(LAYER_GLOW)) map.removeLayer(LAYER_GLOW);
+        if (map.getSource(SRC)) map.removeSource(SRC);
+      } catch {}
+    },
+  };
+}

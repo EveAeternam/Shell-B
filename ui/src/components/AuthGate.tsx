@@ -1,0 +1,123 @@
+/** Login screen in front of the app (server/auth.py). First run sets the password with the admin key. */
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import clsx from 'clsx';
+import { Loader2, LockKeyhole } from 'lucide-react';
+import { AUTH_LOST, api, setFrameKey, type AuthInfo } from '../api';
+import { btn } from './common';
+import { reducedMotion } from '../ambience';
+import '../ambience.css';
+
+const errText = (e: unknown) => String(e).replace(/^Error: \d+: /, '');
+
+export function AuthGate({ children }: { children: ReactNode }) {
+  const [info, setInfo] = useState<AuthInfo | null>(null);
+  const [failed, setFailed] = useState('');
+  const [lost, setLost] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  const accept = useCallback((i: AuthInfo) => {
+    setInfo(i);
+    if (i.authenticated) {
+      setFrameKey(i.frameKey);
+      setLost(false);
+      setMounted(true);
+      if (i.via === 'session') {
+        try { localStorage.setItem('shellb.kiosk.password_authenticated', 'true'); } catch {}
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    api.authMe().then(accept).catch(e => {
+      // a server from before login (UI rebuilt ahead of the restart) answers /api/auth/me with the SPA page, not JSON
+      if (e instanceof SyntaxError) accept({ authenticated: true, via: null, passwordSet: false, frameKey: null });
+      else setFailed(errText(e));
+    });
+    // a 401 from any call: confirm, then show the login over the app (so an unsent draft survives)
+    const onLost = () => api.authMe().then(i => {
+      if (!i.authenticated) {
+        setInfo(i);
+        setLost(true);
+        try { localStorage.removeItem('shellb.kiosk.password_authenticated'); } catch {}
+      }
+    }).catch(() => {});
+    window.addEventListener(AUTH_LOST, onLost);
+    return () => window.removeEventListener(AUTH_LOST, onLost);
+  }, [accept]);
+
+  if (failed) return <Screen><p className="text-sm text-[var(--text-secondary)]">Can't reach Shell:B: {failed}</p></Screen>;
+  if (!info) return <div className="h-dvh flex items-center justify-center"><LoginBackdrop /><Loader2 className="relative w-5 h-5 animate-spin text-white/60" /></div>;
+  const form = (!info.authenticated || lost) && <Screen overlay={mounted}><LoginForm setup={!info.passwordSet} onDone={accept} /></Screen>;
+  return <>{mounted && children}{form}</>;
+}
+
+// The startup animation's scene, kept running behind the sign-in card: stars, the risen sun, the scrolling grid.
+function LoginBackdrop() {
+  return (
+    <div className={'sb-splash sb-backdrop' + (reducedMotion() ? ' sb-calm' : '')} aria-hidden>
+      <div className="sb-splash-stars" />
+      <div className="sb-splash-sun" />
+      <div className="sb-splash-floor"><div className="sb-splash-grid" /></div>
+    </div>
+  );
+}
+
+function Screen({ children, overlay }: { children: ReactNode; overlay?: boolean }) {
+  return (
+    <div className={overlay ? 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm'
+      : 'h-dvh overflow-y-auto flex items-center justify-center p-4'}>
+      {!overlay && <LoginBackdrop />}
+      <div className={clsx('relative w-full max-w-sm rounded-2xl border border-[var(--border-subtle)] shadow-2xl p-6', !overlay && 'mt-[34vh]')}
+        style={overlay ? { background: 'var(--bg-secondary)' }  // on the backdrop: sits on the horizon, the sun rising behind it
+          : { background: 'color-mix(in srgb, var(--bg-secondary) 90%, transparent)', backdropFilter: 'blur(14px)' }}>
+        <div className="flex items-center gap-2 mb-5">
+          <span className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style={{ background: 'var(--sunset-brand, linear-gradient(135deg,#7c3aed,#a78bfa))' }}>B</span>
+          <span className="font-semibold tracking-tight text-[var(--brand-soft)]">Shell:B</span>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function LoginForm({ setup, onDone }: { setup: boolean; onDone: (i: AuthInfo) => void }) {
+  const [adminKey, setAdminKey] = useState('');
+  const [password, setPassword] = useState('');
+  const [again, setAgain] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (setup && password !== again) { setError("The passwords don't match."); return; }
+    setBusy(true); setError('');
+    try {
+      onDone(setup ? await api.authSetup(adminKey.trim(), password) : await api.login(password));
+    } catch (err) {
+      setError(errText(err));
+      setPassword(''); setAgain('');
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <form onSubmit={submit} className="space-y-3">
+      <div>
+        <h1 className="text-base font-semibold flex items-center gap-2"><LockKeyhole className="w-4 h-4" />{setup ? 'Choose a password' : 'Log in'}</h1>
+        <p className="text-xs text-[var(--text-muted)] mt-1">
+          {setup ? <>Prove you own this machine with the admin key. Get it with <code className="font-mono">cat ~/shellb/web/data/admin.key</code>.</>
+            : 'Sessions last 30 days from your last visit.'}
+        </p>
+      </div>
+      {setup && <input className={btn.input} placeholder="Admin key" autoComplete="off" value={adminKey} onChange={e => setAdminKey(e.target.value)} autoFocus />}
+      {/* a hidden username lets password managers save the login */}
+      <input type="text" name="username" value="owner" autoComplete="username" readOnly hidden />
+      <input className={btn.input} type="password" placeholder={setup ? 'New password (8+ characters)' : 'Password'}
+        autoComplete={setup ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} autoFocus={!setup} />
+      {setup && <input className={btn.input} type="password" placeholder="New password again" autoComplete="new-password" value={again} onChange={e => setAgain(e.target.value)} />}
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <button type="submit" className={`${btn.primary} w-full py-2`} disabled={busy || !password || (setup && (!adminKey || !again))}>
+        {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}{setup ? 'Set password and log in' : 'Log in'}
+      </button>
+    </form>
+  );
+}
